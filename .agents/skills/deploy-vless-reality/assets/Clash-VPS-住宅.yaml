@@ -1,0 +1,330 @@
+# 脱敏模板：使用 scripts/build_configs.py 填入本次 VPS 节点。
+# 内置全部 247 条分流规则；住宅可选，最终输出文件名保持 Clash-VPS-住宅.yaml。
+# 模板占位符不可直接当作节点导入；不含原部署的 IP、UUID、密钥或订阅令牌。
+mixed-port: 7890
+allow-lan: false
+bind-address: 127.0.0.1
+mode: rule
+log-level: info
+ipv6: false
+profile:
+  store-selected: true
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+  - 223.5.5.5
+  - 119.29.29.29
+  nameserver:
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
+  fake-ip-filter:
+  - +.lan
+  - +.local
+  - localhost
+find-process-mode: always
+proxies:
+- name: VPS出口 · REALITY Vision
+  type: vless
+  server: REPLACE_WITH_VPS_IP_OR_DOMAIN
+  port: 443
+  uuid: REPLACE_WITH_VPS_UUID
+  network: tcp
+  tls: true
+  flow: xtls-rprx-vision
+  udp: true
+  packet-encoding: xudp
+  servername: REPLACE_WITH_VERIFIED_REALITY_SNI
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: REPLACE_WITH_REALITY_PUBLIC_KEY
+    short-id: REPLACE_WITH_REALITY_SHORT_ID
+    support-x25519mlkem768: true
+- name: 住宅出口 · REALITY Vision
+  type: vless
+  server: REPLACE_WITH_VPS_IP_OR_DOMAIN
+  port: 443
+  uuid: REPLACE_WITH_RESIDENTIAL_UUID
+  network: tcp
+  tls: true
+  flow: xtls-rprx-vision
+  udp: false
+  packet-encoding: xudp
+  servername: REPLACE_WITH_VERIFIED_REALITY_SNI
+  client-fingerprint: chrome
+  reality-opts:
+    public-key: REPLACE_WITH_REALITY_PUBLIC_KEY
+    short-id: REPLACE_WITH_REALITY_SHORT_ID
+    support-x25519mlkem768: true
+proxy-groups:
+- name: PROXY
+  type: select
+  proxies:
+  - VPS出口 · REALITY Vision
+  - 住宅出口 · REALITY Vision
+  - DIRECT
+- name: AI服务
+  type: select
+  include-all: true
+  proxies:
+  - PROXY
+- name: 流媒体
+  type: select
+  include-all: true
+  proxies:
+  - PROXY
+- name: 国外网站
+  type: select
+  include-all: true
+  proxies:
+  - PROXY
+rules:
+- PROCESS-PATH-REGEX,^/Applications/Claude[.]app/Contents/.*,AI服务
+- PROCESS-NAME-WILDCARD,Claude*,AI服务
+- PROCESS-PATH-REGEX,^/Applications/WorkBuddy[.]app/Contents/.*,DIRECT
+- PROCESS-PATH-REGEX,^/Users/[^/]+/[.]workbuddy/binaries/.*,DIRECT
+- DOMAIN-KEYWORD,deepseek.com,DIRECT
+- DOMAIN-SUFFIX,creator.xiaohongshu.com,DIRECT
+- DOMAIN-SUFFIX,creator.douyin.com,DIRECT
+- DOMAIN-SUFFIX,member.bilibili.com,DIRECT
+- DOMAIN-SUFFIX,a6api.com,DIRECT
+- DOMAIN-SUFFIX,localhost,DIRECT
+- DOMAIN-SUFFIX,local,DIRECT
+- DOMAIN-SUFFIX,lan,DIRECT
+- DOMAIN-SUFFIX,home.arpa,DIRECT
+- IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
+- IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+- IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+- IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+- IP-CIDR6,::1/128,DIRECT,no-resolve
+- IP-CIDR6,fc00::/7,DIRECT,no-resolve
+- IP-CIDR6,fe80::/10,DIRECT,no-resolve
+- DOMAIN-SUFFIX,openai.com,AI服务
+- DOMAIN-SUFFIX,chatgpt.com,AI服务
+- DOMAIN-SUFFIX,oaistatic.com,AI服务
+- DOMAIN-SUFFIX,oaiusercontent.com,AI服务
+- DOMAIN-SUFFIX,openaiapi-site.azureedge.net,AI服务
+- DOMAIN-SUFFIX,claude.ai,AI服务
+- DOMAIN-SUFFIX,anthropic.com,AI服务
+- DOMAIN-SUFFIX,perplexity.ai,AI服务
+- DOMAIN-SUFFIX,gemini.google.com,AI服务
+- DOMAIN-SUFFIX,bard.google.com,AI服务
+- DOMAIN-SUFFIX,generativelanguage.googleapis.com,AI服务
+- DOMAIN-SUFFIX,ai.google.dev,AI服务
+- DOMAIN-SUFFIX,aistudio.google.com,AI服务
+- DOMAIN-SUFFIX,makersuite.google.com,AI服务
+- DOMAIN-SUFFIX,copilot.microsoft.com,AI服务
+- DOMAIN-SUFFIX,copilot.cloud.microsoft,AI服务
+- DOMAIN-SUFFIX,sydney.bing.com,AI服务
+- DOMAIN-SUFFIX,midjourney.com,AI服务
+- DOMAIN-SUFFIX,stability.ai,AI服务
+- DOMAIN-SUFFIX,huggingface.co,AI服务
+- DOMAIN-SUFFIX,hf.co,AI服务
+- DOMAIN-SUFFIX,cohere.ai,AI服务
+- DOMAIN-SUFFIX,cohere.com,AI服务
+- DOMAIN-SUFFIX,mistral.ai,AI服务
+- DOMAIN-SUFFIX,groq.com,AI服务
+- DOMAIN-SUFFIX,cursor.sh,AI服务
+- DOMAIN-SUFFIX,cursor.com,AI服务
+- DOMAIN-SUFFIX,copilot-proxy.githubusercontent.com,AI服务
+- DOMAIN-SUFFIX,character.ai,AI服务
+- DOMAIN-SUFFIX,poe.com,AI服务
+- DOMAIN-SUFFIX,replicate.com,AI服务
+- DOMAIN-SUFFIX,runwayml.com,AI服务
+- DOMAIN-SUFFIX,elevenlabs.io,AI服务
+- DOMAIN-SUFFIX,leonardo.ai,AI服务
+- DOMAIN-SUFFIX,suno.ai,AI服务
+- DOMAIN-SUFFIX,suno.com,AI服务
+- DOMAIN-SUFFIX,v0.dev,AI服务
+- DOMAIN-SUFFIX,sdk.vercel.ai,AI服务
+- DOMAIN-SUFFIX,grok.com,AI服务
+- DOMAIN-SUFFIX,x.ai,AI服务
+- DOMAIN-SUFFIX,together.ai,AI服务
+- DOMAIN-SUFFIX,together.xyz,AI服务
+- DOMAIN-SUFFIX,deepseek.com,AI服务
+- DOMAIN-SUFFIX,kimi.ai,AI服务
+- DOMAIN-SUFFIX,moonshot.cn,AI服务
+- DOMAIN-KEYWORD,openai,AI服务
+- DOMAIN-KEYWORD,chatgpt,AI服务
+- DOMAIN-SUFFIX,netflix.com,流媒体
+- DOMAIN-SUFFIX,netflix.net,流媒体
+- DOMAIN-SUFFIX,nflxext.com,流媒体
+- DOMAIN-SUFFIX,nflximg.com,流媒体
+- DOMAIN-SUFFIX,nflximg.net,流媒体
+- DOMAIN-SUFFIX,nflxso.net,流媒体
+- DOMAIN-SUFFIX,nflxvideo.net,流媒体
+- DOMAIN-SUFFIX,disneyplus.com,流媒体
+- DOMAIN-SUFFIX,dssott.com,流媒体
+- DOMAIN-SUFFIX,bamgrid.com,流媒体
+- DOMAIN-SUFFIX,hbo.com,流媒体
+- DOMAIN-SUFFIX,hboasia.com,流媒体
+- DOMAIN-SUFFIX,hbogo.com,流媒体
+- DOMAIN-SUFFIX,hbogoasia.hk,流媒体
+- DOMAIN-SUFFIX,hulu.com,流媒体
+- DOMAIN-SUFFIX,huluim.com,流媒体
+- DOMAIN-SUFFIX,hulustream.com,流媒体
+- DOMAIN-SUFFIX,spotify.com,流媒体
+- DOMAIN-SUFFIX,scdn.co,流媒体
+- DOMAIN-SUFFIX,spoti.fi,流媒体
+- DOMAIN-SUFFIX,youtube.com,流媒体
+- DOMAIN-SUFFIX,youtu.be,流媒体
+- DOMAIN-SUFFIX,googlevideo.com,流媒体
+- DOMAIN-SUFFIX,ytimg.com,流媒体
+- DOMAIN-SUFFIX,tiktok.com,流媒体
+- DOMAIN-SUFFIX,tiktokv.com,流媒体
+- DOMAIN-SUFFIX,ttlivecdn.com,流媒体
+- DOMAIN-SUFFIX,ibyteimg.com,流媒体
+- DOMAIN-SUFFIX,twitch.tv,流媒体
+- DOMAIN-SUFFIX,twitchcdn.net,流媒体
+- DOMAIN-SUFFIX,jtvnw.net,流媒体
+- DOMAIN-SUFFIX,ttvnw.net,流媒体
+- DOMAIN-SUFFIX,vimeo.com,流媒体
+- DOMAIN-SUFFIX,videopress.com,流媒体
+- DOMAIN-SUFFIX,soundcloud.com,流媒体
+- DOMAIN-SUFFIX,deezer.com,流媒体
+- DOMAIN-SUFFIX,pandora.com,流媒体
+- DOMAIN-SUFFIX,joox.com,流媒体
+- DOMAIN-SUFFIX,mytvsuper.com,流媒体
+- DOMAIN-SUFFIX,tvb.com,流媒体
+- DOMAIN-SUFFIX,viu.tv,流媒体
+- DOMAIN-SUFFIX,abema.tv,流媒体
+- DOMAIN-SUFFIX,abema.io,流媒体
+- DOMAIN-SUFFIX,ameba.jp,流媒体
+- DOMAIN-SUFFIX,bahamut.com.tw,流媒体
+- DOMAIN-SUFFIX,gamer.com.tw,流媒体
+- DOMAIN-SUFFIX,chocotv.com.tw,流媒体
+- DOMAIN-SUFFIX,fox.com,流媒体
+- DOMAIN-SUFFIX,foxplus.com,流媒体
+- DOMAIN-SUFFIX,foxplay.com,流媒体
+- DOMAIN-SUFFIX,foxnow.com,流媒体
+- DOMAIN-SUFFIX,fxnetworks.com,流媒体
+- DOMAIN-SUFFIX,vevo.com,流媒体
+- DOMAIN-SUFFIX,zattoo.com,流媒体
+- DOMAIN-SUFFIX,crackle.com,流媒体
+- DOMAIN-SUFFIX,dailymotion.com,流媒体
+- DOMAIN-SUFFIX,dnvod.tv,流媒体
+- DOMAIN-SUFFIX,google.com,国外网站
+- DOMAIN-SUFFIX,gstatic.com,国外网站
+- DOMAIN-SUFFIX,googleapis.com,国外网站
+- DOMAIN-SUFFIX,gmail.com,国外网站
+- DOMAIN-SUFFIX,appspot.com,国外网站
+- DOMAIN-SUFFIX,blogger.com,国外网站
+- DOMAIN-SUFFIX,dropbox.com,国外网站
+- DOMAIN-SUFFIX,dropboxusercontent.com,国外网站
+- DOMAIN-SUFFIX,github.com,国外网站
+- DOMAIN-KEYWORD,github,国外网站
+- DOMAIN-SUFFIX,telegram.org,国外网站
+- DOMAIN-SUFFIX,telegram.me,国外网站
+- DOMAIN-SUFFIX,t.me,国外网站
+- DOMAIN-SUFFIX,telegra.ph,国外网站
+- DOMAIN-SUFFIX,tdesktop.com,国外网站
+- DOMAIN-SUFFIX,line.me,国外网站
+- DOMAIN-SUFFIX,line-apps.com,国外网站
+- DOMAIN-SUFFIX,line-scdn.net,国外网站
+- DOMAIN-SUFFIX,facebook.com,国外网站
+- DOMAIN-SUFFIX,fb.com,国外网站
+- DOMAIN-SUFFIX,fb.me,国外网站
+- DOMAIN-SUFFIX,fbcdn.net,国外网站
+- DOMAIN-SUFFIX,fbsbx.com,国外网站
+- DOMAIN-SUFFIX,instagram.com,国外网站
+- DOMAIN-SUFFIX,cdninstagram.com,国外网站
+- DOMAIN-SUFFIX,whatsapp.com,国外网站
+- DOMAIN-SUFFIX,whatsapp.net,国外网站
+- DOMAIN-SUFFIX,twitter.com,国外网站
+- DOMAIN-SUFFIX,x.com,国外网站
+- DOMAIN-SUFFIX,t.co,国外网站
+- DOMAIN-SUFFIX,twimg.com,国外网站
+- DOMAIN-SUFFIX,reddit.com,国外网站
+- DOMAIN-SUFFIX,redditmedia.com,国外网站
+- DOMAIN-SUFFIX,quora.com,国外网站
+- DOMAIN-SUFFIX,medium.com,国外网站
+- DOMAIN-SUFFIX,wikipedia.org,国外网站
+- DOMAIN-SUFFIX,nytimes.com,国外网站
+- DOMAIN-SUFFIX,reuters.com,国外网站
+- DOMAIN-SUFFIX,bloomberg.com,国外网站
+- DOMAIN-SUFFIX,wsj.com,国外网站
+- DOMAIN-SUFFIX,duckduckgo.com,国外网站
+- DOMAIN-SUFFIX,discordapp.com,国外网站
+- DOMAIN-SUFFIX,discordapp.net,国外网站
+- DOMAIN-SUFFIX,signal.org,国外网站
+- DOMAIN-SUFFIX,torproject.org,国外网站
+- DOMAIN-SUFFIX,archive.org,国外网站
+- DOMAIN-SUFFIX,mega.nz,国外网站
+- DOMAIN-SUFFIX,pixiv.net,国外网站
+- DOMAIN-SUFFIX,steamcommunity.com,国外网站
+- DOMAIN-SUFFIX,store.steampowered.com,国外网站
+- DOMAIN-SUFFIX,api.steampowered.com,国外网站
+- DOMAIN-SUFFIX,media.steampowered.com,国外网站
+- DOMAIN-SUFFIX,live.com,国外网站
+- DOMAIN-SUFFIX,bing.com,国外网站
+- DOMAIN-SUFFIX,yahoo.com,国外网站
+- DOMAIN-SUFFIX,linkedin.com,国外网站
+- DOMAIN-SUFFIX,qq.com,DIRECT
+- DOMAIN-SUFFIX,qpic.cn,DIRECT
+- DOMAIN-SUFFIX,tencent.com,DIRECT
+- DOMAIN-SUFFIX,weixin.qq.com,DIRECT
+- DOMAIN-SUFFIX,wechat.com,DIRECT
+- DOMAIN-SUFFIX,taobao.com,DIRECT
+- DOMAIN-SUFFIX,tmall.com,DIRECT
+- DOMAIN-SUFFIX,jd.com,DIRECT
+- DOMAIN-SUFFIX,360buyimg.com,DIRECT
+- DOMAIN-SUFFIX,alibaba.com,DIRECT
+- DOMAIN-SUFFIX,alicdn.com,DIRECT
+- DOMAIN-SUFFIX,amap.com,DIRECT
+- DOMAIN-SUFFIX,dingtalk.com,DIRECT
+- DOMAIN-SUFFIX,youku.com,DIRECT
+- DOMAIN-SUFFIX,ykimg.com,DIRECT
+- DOMAIN-SUFFIX,iqiyi.com,DIRECT
+- DOMAIN-SUFFIX,iqiyipic.com,DIRECT
+- DOMAIN-SUFFIX,mgtv.com,DIRECT
+- DOMAIN-SUFFIX,hitv.com,DIRECT
+- DOMAIN-SUFFIX,bilibili.com,DIRECT
+- DOMAIN-SUFFIX,biliapi.com,DIRECT
+- DOMAIN-SUFFIX,biliapi.net,DIRECT
+- DOMAIN-SUFFIX,biligame.com,DIRECT
+- DOMAIN-SUFFIX,biligame.net,DIRECT
+- DOMAIN-SUFFIX,acg.tv,DIRECT
+- DOMAIN-SUFFIX,acgvideo.com,DIRECT
+- DOMAIN-SUFFIX,b23.tv,DIRECT
+- DOMAIN-SUFFIX,hdslb.com,DIRECT
+- DOMAIN-SUFFIX,baidu.com,DIRECT
+- DOMAIN-SUFFIX,bdstatic.com,DIRECT
+- DOMAIN-SUFFIX,163.com,DIRECT
+- DOMAIN-SUFFIX,126.net,DIRECT
+- DOMAIN-SUFFIX,163yun.com,DIRECT
+- DOMAIN-SUFFIX,music.163.com,DIRECT
+- DOMAIN-SUFFIX,music.126.net,DIRECT
+- DOMAIN-SUFFIX,weibo.com,DIRECT
+- DOMAIN-SUFFIX,weibo.cn,DIRECT
+- DOMAIN-SUFFIX,zhihu.com,DIRECT
+- DOMAIN-SUFFIX,zhimg.com,DIRECT
+- DOMAIN-SUFFIX,xiaomi.com,DIRECT
+- DOMAIN-SUFFIX,mifile.cn,DIRECT
+- DOMAIN-SUFFIX,mi-img.com,DIRECT
+- DOMAIN-SUFFIX,meituan.net,DIRECT
+- DOMAIN-SUFFIX,yangkeduo.com,DIRECT
+- DOMAIN-SUFFIX,toutiao.com,DIRECT
+- DOMAIN-SUFFIX,snssdk.com,DIRECT
+- DOMAIN-SUFFIX,pstatp.com,DIRECT
+- DOMAIN-SUFFIX,bytecdn.cn,DIRECT
+- DOMAIN-SUFFIX,ipip.net,DIRECT
+- DOMAIN-SUFFIX,ip.cn,DIRECT
+- DOMAIN-SUFFIX,ip.la,DIRECT
+- DOMAIN-SUFFIX,whatismyip.com,DIRECT
+- DOMAIN-KEYWORD,announce,DIRECT
+- DOMAIN-KEYWORD,torrent,DIRECT
+- DOMAIN-KEYWORD,tracker,DIRECT
+- IP-CIDR,91.108.4.0/22,国外网站
+- IP-CIDR,91.108.8.0/22,国外网站
+- IP-CIDR,91.108.12.0/22,国外网站
+- IP-CIDR,91.108.16.0/22,国外网站
+- IP-CIDR,91.108.56.0/22,国外网站
+- IP-CIDR,109.239.140.0/24,国外网站
+- IP-CIDR,149.154.160.0/20,国外网站
+- DOMAIN-SUFFIX,cn,DIRECT
+- GEOIP,CN,DIRECT
+- MATCH,国外网站

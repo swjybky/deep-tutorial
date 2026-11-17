@@ -1,0 +1,4 @@
+interface:
+  display_name: "VPS 梯子部署"
+  short_description: "部署 REALITY + Vision，生成含分流规则的 Clash 订阅，住宅出口可选"
+  default_prompt: "使用 $deploy-vless-reality 为我的 VPS 部署 VLESS + REALITY + Vision，生成含分流规则的 Clash-VPS-住宅.yaml 和订阅地址，住宅代理可选。"

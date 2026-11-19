@@ -16,7 +16,7 @@
 针对不便自行注册或需要批量/现成账号的场景，介绍如何甄别与使用发卡网（卡网）购买成品号、API Key 或共享/独享会员账号，以及改密、绑定二次验证（2FA）等售后安全检查。
 
 ### [第四章：反代（反向代理）](./04-reverse-proxy/README.md)
-讲解如何通过 Cloudflare Workers、Nginx、Docker 或开源中转服务搭建 API 与 Web 反向代理，解决国内直连受限、跨域、多账号负载均衡及 Key 分发管理问题。
+通过 Magpie 的本机网关接入 Gemini API，介绍网关手动配置、Codex 等 Agent 一键接入，以及用插件将模型自动同步到 DeepWrite。本章也规划了 Cloudflare Workers、Nginx、Docker 等反代方案。
 
 ### [第五章：接入](./05-integration/README.md)
 介绍如何将获取到的海外 AI 账号或反代 API 接入到实际工具与工作流中，包括开源客户端（NextChat、LobeChat、Cherry Studio）、IDE 插件（Cursor、VS Code、Antigravity）以及业务代码 SDK 调用。

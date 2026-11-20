@@ -4,7 +4,7 @@
 
 ## 本章教程
 
-- [Magpie 反代与 DeepWrite 接入](./Magpie反代与DeepWrite接入.md)
+- [DeepGeminiProxy 反代教程](./DeepGeminiProxy反代教程.md)
 
 ## 核心内容规划
 
